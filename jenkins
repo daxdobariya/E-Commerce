@@ -1,0 +1,32 @@
+pipeline {
+    agent {
+        label 'W1'
+    }
+
+    stages {
+        stage('git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/daxdobariya/E-Commerce.git'
+            }
+        }
+        stage('docker'){
+            steps {
+            sh '''
+                echo "Building Docker image..."
+                docker build -t ecommerce:latest .
+                '''
+            }
+        }
+        stages('container create'){
+            steps {
+                sh '''
+                docker run -d -p 3000:3000 --name myapp-container ecommerce:latest || true
+                '''
+            }
+        }
+        
+        
+    }
+
+}
+
